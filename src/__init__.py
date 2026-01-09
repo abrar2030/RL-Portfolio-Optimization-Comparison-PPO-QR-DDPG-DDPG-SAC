@@ -12,12 +12,12 @@ __version__ = "1.0.0"
 __author__ = "Abrar Ahmed"
 
 __all__ = [
-    'DataProcessor',
-    'PortfolioEnv',
-    'DDPGAgent',
-    'QRDDPGAgent',
-    'BenchmarkStrategies',
-    'BacktestBenchmark',
-    'calculate_portfolio_metrics',
-    'normalize_weights'
+    "DataProcessor",
+    "PortfolioEnv",
+    "DDPGAgent",
+    "QRDDPGAgent",
+    "BenchmarkStrategies",
+    "BacktestBenchmark",
+    "calculate_portfolio_metrics",
+    "normalize_weights",
 ]
