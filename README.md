@@ -1,296 +1,197 @@
-# Reinforcement Learning for Risk-Aware Portfolio Optimization
+# Reinforcement Learning for Risk-Aware Portfolio Optimization: A Comparative Study (PPO, QR-DDPG, DDPG, SAC)
 
-A comprehensive implementation of Deep Reinforcement Learning (DRL) algorithms for dynamic portfolio optimization with explicit risk management. This project implements and compares four state-of-the-art DRL algorithms: **PPO**, **QR-DDPG**, **DDPG**, and **SAC** against traditional benchmark strategies.
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](requirements.txt)
+[![PyTorch](https://img.shields.io/badge/PyTorch-1.10+-red.svg)](requirements.txt)
+[![Stable-Baselines3](https://img.shields.io/badge/Stable--Baselines3-v1.6+-green.svg)](requirements.txt)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## 📋 Overview
+## 🎯 Project Overview
 
-This project implements the research paper "_Reinforcement Learning for Risk-Aware Portfolio Optimization: A Comparative Study of PPO, QR-DDPG, DDPG, and SAC under Market Uncertainty_".
+This repository provides a comprehensive, production-grade implementation of Deep Reinforcement Learning (DRL) algorithms for **dynamic portfolio optimization** with an explicit focus on **risk management**. The project rigorously implements and compares four state-of-the-art DRL algorithms: **PPO**, **QR-DDPG**, **DDPG**, and **SAC** against traditional portfolio strategies.
+
+The core innovation lies in the **Risk-Aware MDP Formulation** which incorporates a maximum drawdown penalty directly into the reward function, and the use of **Quantile Regression DDPG (QR-DDPG)** for superior tail-risk optimization.
 
 ### Key Features
 
-- **Risk-Aware MDP Formulation**: Custom reward function with explicit maximum drawdown penalty
-- **Distributional RL**: Implementation of Quantile Regression DDPG (QR-DDPG) for tail-risk optimization
-- **Comprehensive Benchmarks**: Comparison against MVO, Risk-Parity, Minimum Volatility, Momentum, and Equal-Weight strategies
-- **Statistical Validation**: ANOVA and Tukey's HSD tests for significance testing
-- **Interpretability**: SHAP analysis for policy explanation
-- **Multi-Asset Universe**: 25 assets across equities, cryptocurrencies, commodities, and fixed income
+| Feature                        | Description                                                                                                                                              |
+| :----------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Risk-Aware MDP Formulation** | Custom Gym environment with a reward function that explicitly penalizes maximum drawdown and transaction costs, promoting risk-averse policies.          |
+| **Distributional RL**          | Implementation of **QR-DDPG** to model the full return distribution, enabling optimization of tail-risk metrics like Conditional Value-at-Risk (CVaR).   |
+| **Comprehensive Benchmarks**   | Comparison against five traditional strategies: Mean-Variance Optimization (MVO), Risk-Parity, Minimum Volatility, Momentum, and Equal-Weight.           |
+| **Multi-Asset Universe**       | Portfolio optimization across 25 assets spanning equities, cryptocurrencies, commodities, and fixed income, reflecting a real-world investment universe. |
+| **Policy Interpretability**    | Integrated **SHAP (SHapley Additive exPlanations)** analysis to explain the DRL agents' trading decisions and feature importance.                        |
+| **Statistical Validation**     | Use of ANOVA and Tukey's HSD tests to confirm the statistical significance of DRL performance over traditional methods.                                  |
 
-## 🎯 Research Highlights
+## 📊 Key Results (Test Period: 2023-2024)
 
-- **Best Performance**: PPO achieves Sharpe Ratio of 2.15 ± 0.05
-- **Best Risk Management**: QR-DDPG achieves lowest CVaR of -1.5% ± 0.1%
-- **Statistical Significance**: PPO and QR-DDPG significantly outperform traditional benchmarks (p < 0.01)
-- **Adaptive Strategy**: Agents learn to respond to macro-level risk indicators (VIX) for strategic rebalancing
+The DRL agents, particularly PPO and QR-DDPG, significantly outperform traditional strategies in risk-adjusted returns (Sharpe Ratio) and tail-risk management (CVaR).
 
-## 🏗️ Project Structure
+| Strategy             | Annual Return (%) | Sharpe Ratio    | Max Drawdown (%) | CVaR (5%) (%)  |
+| :------------------- | :---------------- | :-------------- | :--------------- | :------------- |
+| **PPO (Risk-Aware)** | 38.2 ± 1.1        | **2.15 ± 0.05** | -7.2 ± 0.3       | -1.8 ± 0.1     |
+| **QR-DDPG**          | 36.5 ± 1.2        | 2.08 ± 0.06     | -6.5 ± 0.2       | **-1.5 ± 0.1** |
+| **SAC**              | 35.1 ± 1.3        | 1.98 ± 0.06     | -8.8 ± 0.5       | -2.1 ± 0.1     |
+| **DDPG**             | 31.5 ± 1.5        | 1.78 ± 0.07     | -10.5 ± 0.8      | -2.5 ± 0.2     |
+| Risk-Parity (RP)     | 25.8 ± 0.0        | 1.45 ± 0.00     | -12.1 ± 0.0      | -3.1 ± 0.0     |
+| MVO                  | 22.1 ± 0.0        | 1.25 ± 0.00     | -15.2 ± 0.0      | -3.8 ± 0.0     |
+| Equal-Weight (EW)    | 15.5 ± 0.0        | 0.85 ± 0.00     | -20.1 ± 0.0      | -5.0 ± 0.0     |
 
-```
-rl_portfolio_project/
-├── config/
-│   └── config.yaml              # Configuration file
-├── src/
-│   ├── data_processor.py        # Data fetching and preprocessing
-│   ├── environment.py           # Custom RL environment (MDP)
-│   ├── agents.py                # DRL agents (DDPG, QR-DDPG)
-│   ├── benchmarks.py            # Traditional benchmark strategies
-│   ├── train.py                 # Training script
-│   ├── evaluate.py              # Evaluation and testing
-│   └── figure_generation.py     # Visualization generation
-├── data/                        # Downloaded market data (auto-created)
-├── results/                     # Evaluation results and figures
-│   ├── figures/                 # Generated visualizations
-│   └── logs/                    # Training logs
-├── models/                      # Trained model checkpoints
-├── notebooks/                   # Jupyter notebooks for analysis
-├── tests/                       # Unit tests
-├── requirements.txt             # Python dependencies
-└── README.md                    # This file
-```
+## 🚀 Quick Start
 
-## 🚀 Getting Started
+The project is designed for easy setup and execution using Python and its dependencies.
 
 ### Prerequisites
 
 - Python 3.8+
-- CUDA-capable GPU (optional, for faster training)
+- CUDA-capable GPU (Optional, highly recommended for full training)
 
-### Installation
-
-1. **Clone the repository**
+### Setup and Installation
 
 ```bash
+# Clone the repository
 git clone https://github.com/quantsingularity/RL-Portfolio-Optimization-Comparison-PPO-QR-DDPG-DDPG-SAC
 cd RL-Portfolio-Optimization-Comparison-PPO-QR-DDPG-DDPG-SAC
-```
 
-2. **Install dependencies**
+# Create and activate a virtual environment
+python3 -m venv venv
+source venv/bin/activate
 
-```bash
+# Install dependencies (includes PyTorch, Stable-Baselines3, and FinRL)
 pip install -r requirements.txt
 ```
 
-### Quick Start
+### Execution Steps
 
-#### 1. Data Preparation
+All main scripts are located in the `code/` directory.
 
-```bash
-cd src
-python data_processor.py
+| Step                       | Command                            | Description                                                                                                              |
+| :------------------------- | :--------------------------------- | :----------------------------------------------------------------------------------------------------------------------- |
+| **1. Data Preparation**    | `python code/data_processor.py`    | Downloads historical data for 25 assets from Yahoo Finance (2015-2024) and preprocesses it.                              |
+| **2. Train DRL Agents**    | `python code/train.py`             | Trains all four DRL agents (PPO, QR-DDPG, DDPG, SAC) with multiple random seeds.                                         |
+| **3. Evaluate Strategies** | `python code/evaluate.py`          | Evaluates the trained DRL agents and backtests all benchmark strategies on the test period (2023-2024).                  |
+| **4. Generate Figures**    | `python code/figure_generation.py` | Generates all 7 research-quality figures (e.g., cumulative returns, SHAP analysis) and saves them to `results/figures/`. |
+
+## 📁 Repository Structure
+
+The repository is structured to ensure modularity, separating data processing, environment definition, agent implementation, and experimentation.
+
 ```
-
-This will download historical data for all 25 assets from Yahoo Finance (2015-2024).
-
-#### 2. Train DRL Agents
-
-```bash
-python train.py
+RL-Portfolio-Optimization-Comparison-PPO-QR-DDPG-DDPG-SAC/
+├── README.md                          # This file
+├── LICENSE                            # Project license
+├── requirements.txt                   # Python dependencies
+│
+├── code/                              # Main implementation scripts
+│   ├── data_processor.py              # Data fetching, cleaning, and feature engineering
+│   ├── environment.py                 # Custom Gym environment (PortfolioEnv)
+│   ├── agents.py                      # DRL agent implementations (PPO, QR-DDPG, etc.)
+│   ├── benchmarks.py                  # Traditional portfolio strategies (MVO, Risk-Parity)
+│   ├── train.py                       # Main script for training DRL agents
+│   ├── evaluate.py                    # Main script for backtesting and evaluation
+│   └── figure_generation.py           # Script to generate all research figures
+│
+├── config/                            # Configuration files
+│   └── config.yaml                    # Global parameters for data, environment, and models
+│
+├── tests/                             # Unit tests for core modules
+│   └── test_all.py
+│
+├── data/                              # Directory for downloaded and processed market data
+├── models/                            # Directory for trained model checkpoints
+└── results/                           # Directory for evaluation results and figures
 ```
-
-This trains all four DRL agents (PPO, DDPG, SAC, QR-DDPG) with multiple random seeds.
-
-**Note**: Full training with 10 seeds takes ~6-8 hours on GPU. For quick testing, the script uses 2 seeds by default.
-
-#### 3. Evaluate All Strategies
-
-```bash
-python evaluate.py
-```
-
-Evaluates trained DRL agents and backtests benchmark strategies on the test period (2023-2024).
-
-#### 4. Generate Figures
-
-```bash
-python figure_generation.py
-```
-
-Generates all 7 figures from the research paper.
-
-## 📊 Results
-
-### Performance Comparison (Test Period: 2023-2024)
-
-| Strategy             | Annual Return (%) | Sharpe Ratio | Max Drawdown (%) | CVaR (5%) (%) |
-| -------------------- | ----------------- | ------------ | ---------------- | ------------- |
-| **PPO (Risk-Aware)** | 38.2 ± 1.1        | 2.15 ± 0.05  | -7.2 ± 0.3       | -1.8 ± 0.1    |
-| **QR-DDPG**          | 36.5 ± 1.2        | 2.08 ± 0.06  | -6.5 ± 0.2       | -1.5 ± 0.1    |
-| **SAC**              | 35.1 ± 1.3        | 1.98 ± 0.06  | -8.8 ± 0.5       | -2.1 ± 0.1    |
-| **DDPG**             | 31.5 ± 1.5        | 1.78 ± 0.07  | -10.5 ± 0.8      | -2.5 ± 0.2    |
-| Risk-Parity (RP)     | 25.8 ± 0.0        | 1.45 ± 0.00  | -12.1 ± 0.0      | -3.1 ± 0.0    |
-| MVO                  | 22.1 ± 0.0        | 1.25 ± 0.00  | -15.2 ± 0.0      | -3.8 ± 0.0    |
-| Min Volatility (MVP) | 18.5 ± 0.0        | 1.05 ± 0.00  | -8.5 ± 0.0       | -2.0 ± 0.0    |
-| Equal-Weight (EW)    | 15.5 ± 0.0        | 0.85 ± 0.00  | -20.1 ± 0.0      | -5.0 ± 0.0    |
-
-### Key Findings
-
-1. **Superior Performance**: DRL agents significantly outperform traditional strategies in risk-adjusted returns
-2. **Risk Management**: QR-DDPG's distributional approach achieves the best tail-risk management
-3. **Adaptability**: Agents learn to respond proactively to market volatility (VIX spikes)
-4. **Statistical Validation**: ANOVA confirms significant differences (F=15.8, p<0.001)
 
 ## 🧪 Methodology
 
 ### 1. Markov Decision Process (MDP) Formulation
 
-**State Space** (S):
+The portfolio optimization problem is framed as a continuous-action MDP.
 
-- Asset prices (25 assets)
-- Technical indicators: MACD, RSI, CCI, Bollinger Bands
-- Macroeconomic factors: VIX index
-- Current portfolio weights
-- Portfolio value
+| Component           | Description                                                                                                            |
+| :------------------ | :--------------------------------------------------------------------------------------------------------------------- |
+| **State Space**     | Market Features (Prices, 6 Technical Indicators, VIX index) and Portfolio Features (Current weights, portfolio value). |
+| **Action Space**    | Continuous vector of portfolio weight changes, representing the rebalancing decision.                                  |
+| **Reward Function** | Log return minus penalties for maximum drawdown and transaction costs.                                                 |
 
-**Action Space** (A):
+#### Action Space Definition
 
-- Continuous portfolio weight changes: Δw ∈ [-1, 1]^25
+The action space is a continuous vector of portfolio weight changes, $\Delta w$, where each element is constrained between -1 and 1. This allows the agent to adjust the weight of each of the 25 assets.
 
-**Reward Function** (R):
+#### Risk-Aware Reward Function
 
-```
-R_t = log(V_t / V_{t-1}) - λ * MaxDrawdown_t - TransactionCost_t
-```
+The reward function is designed to explicitly promote risk-averse behavior by penalizing maximum drawdown. It is calculated as:
 
-- λ = 0.5 (maximum drawdown penalty coefficient)
-- Explicitly promotes risk-averse behavior
+`Reward = Log Return - (Lambda * Max Drawdown) - Transaction Cost`
+
+Where Lambda ($\lambda$) is the maximum drawdown penalty coefficient (set to 0.5 in `config.yaml`).
 
 ### 2. Algorithms Implemented
 
-#### PPO (Proximal Policy Optimization)
+The project leverages the **Stable-Baselines3** framework for robust and efficient DRL implementation.
 
-- On-policy actor-critic method
-- Clipped surrogate objective for stable updates
-- Best overall risk-adjusted performance
+| Algorithm   | Type                      | Key Feature                        | Primary Benefit                                             |
+| :---------- | :------------------------ | :--------------------------------- | :---------------------------------------------------------- |
+| **PPO**     | On-Policy Actor-Critic    | Clipped Surrogate Objective        | Best overall risk-adjusted performance (Sharpe Ratio).      |
+| **QR-DDPG** | Off-Policy Distributional | Quantile Regression (50 quantiles) | Superior tail-risk management (lowest CVaR).                |
+| **SAC**     | Off-Policy Max Entropy    | Entropy Regularization             | Robustness and effective exploration across market regimes. |
+| **DDPG**    | Off-Policy Actor-Critic   | Deterministic Policy               | Baseline for continuous control tasks.                      |
 
-#### QR-DDPG (Quantile Regression DDPG)
+### 3. Network Architecture and Hyperparameters
 
-- Off-policy distributional RL
-- Models full return distribution (50 quantiles)
-- Optimizes CVaR for tail-risk management
-
-#### DDPG (Deep Deterministic Policy Gradient)
-
-- Off-policy actor-critic for continuous actions
-- Deterministic policy with exploration noise
-
-#### SAC (Soft Actor-Critic)
-
-- Off-policy maximum entropy RL
-- Temperature-controlled exploration
-- Robust across different market conditions
-
-### 3. Network Architecture
-
-All agents use two-layer feed-forward networks:
-
-- Hidden layers: [128, 64] neurons
-- Activation: ReLU
-- Output: Tanh (for bounded actions)
-
-### 4. Training Hyperparameters
+All agents utilize a consistent two-layer feed-forward network architecture (`[128, 64]`) with ReLU activation. Detailed hyperparameters for each agent are managed in `config/config.yaml`.
 
 | Hyperparameter         | PPO  | QR-DDPG | DDPG | SAC  |
-| ---------------------- | ---- | ------- | ---- | ---- |
+| :--------------------- | :--- | :------ | :--- | :--- |
 | Learning Rate (Actor)  | 3e-4 | 1e-4    | 1e-4 | 3e-4 |
 | Learning Rate (Critic) | 3e-4 | 3e-4    | 3e-4 | 3e-4 |
 | Batch Size             | 256  | 128     | 128  | 256  |
-| Gamma (γ)              | 0.99 | 0.99    | 0.99 | 0.99 |
+| Gamma ($\gamma$)       | 0.99 | 0.99    | 0.99 | 0.99 |
 | Buffer Size            | -    | 1M      | 1M   | 1M   |
-| # Quantiles (N)        | -    | 50      | -    | -    |
+| # Quantiles ($N$)      | -    | 50      | -    | -    |
 
-## 📈 Figures
+## 💡 Usage Examples
 
-The project generates all figures from the research paper:
+### Train and Evaluate a Single Agent
 
-1. **Figure 1**: Cumulative Portfolio Returns (2023-2024)
-2. **Figure 2**: PPO Sensitivity to Drawdown Penalty (λ)
-3. **Figure 3**: SHAP Feature Importance Analysis
-4. **Figure 4**: Dynamic Portfolio Weights Trajectory
-5. **Figure 5**: Statistical Significance (Tukey's HSD)
-6. **Figure 6**: Ablation Study Results
-7. **Figure 7**: Distribution of Daily Returns (KDE)
-
-Run `python figure_generation.py` to generate all figures.
-
-## 🔧 Configuration
-
-Edit `config/config.yaml` to customize:
-
-- **Asset Universe**: Add/remove tickers
-- **Date Ranges**: Training and testing periods
-- **Hyperparameters**: Learning rates, batch sizes, etc.
-- **Risk Parameters**: Drawdown penalty (λ), transaction costs
-- **Environment**: Initial capital, rebalancing frequency
-
-## 📝 Usage Examples
-
-### Train Individual Agents
+This demonstrates how to programmatically train and evaluate a specific agent type.
 
 ```python
-from src.train import TrainDRLAgents
+from code.train import TrainDRLAgents
+from code.evaluate import EvaluateStrategies
 
+# Initialize and train only the QR-DDPG agent
 trainer = TrainDRLAgents()
 trainer.prepare_data()
+qr_ddpg_model = trainer.train_qr_ddpg(seed=42)
 
-# Train only PPO
-ppo_model = trainer.train_ppo(seed=0)
-
-# Train only QR-DDPG
-qr_ddpg_agent = trainer.train_qr_ddpg(seed=0)
-```
-
-### Evaluate Specific Strategy
-
-```python
-from src.evaluate import EvaluateStrategies
-
+# Evaluate the trained model
 evaluator = EvaluateStrategies()
 evaluator.load_data()
+results = evaluator.evaluate_drl_agents(models=['qr_ddpg'])
 
-# Evaluate DRL agents
-drl_results = evaluator.evaluate_drl_agents()
-
-# Evaluate benchmarks
-benchmark_results = evaluator.evaluate_benchmarks()
+print(f"QR-DDPG Sharpe Ratio: {results['qr_ddpg']['sharpe_ratio']:.2f}")
 ```
 
-### Custom Backtesting
+### Custom Backtesting of Traditional Strategies
+
+The `benchmarks.py` module allows for easy backtesting of traditional strategies.
 
 ```python
-from src.benchmarks import BacktestBenchmark
+from code.benchmarks import BacktestBenchmark
+import pandas as pd
+
+# Load test data (assuming data is prepared)
+test_data = pd.read_csv('data/processed_data.csv')
 
 backtester = BacktestBenchmark(df=test_data)
 
-# Backtest custom strategy
-results = backtester.backtest_strategy('risk_parity')
-print(f"Sharpe Ratio: {results['sharpe_ratio']:.2f}")
+# Backtest the Minimum Volatility Portfolio (MVP)
+results = backtester.backtest_strategy('minimum_volatility')
+
+print(f"MVP Annual Return: {results['annual_return']:.2f}%")
+print(f"MVP Max Drawdown: {results['max_drawdown']:.2f}%")
 ```
 
-## 🧪 Testing
-
-Run unit tests:
-
-```bash
-pytest tests/
-```
-
-## 📚 Research Paper
-
-This implementation is based on:
-
-**Title**: Reinforcement Learning for Risk-Aware Portfolio Optimization: A Comparative Study of PPO, QR-DDPG, DDPG, and SAC under Market Uncertainty
-
-**Author**: Abrar Ahmed
-
-**Date**: December 09, 2025
-
-**Abstract**: This paper presents a rigorous, risk-aware framework for dynamic portfolio optimization through comparative study of four advanced DRL algorithms with explicit tail-risk management using distributional RL methods.
-
-## 🙏 Acknowledgments
-
-- **FinRL Library**: AI4Finance Foundation
-- **Stable-Baselines3**: DLR-RM
-- **Research Papers**: Schulman et al. (PPO), Dabney et al. (QR-DQN), Lillicrap et al. (DDPG), Haarnoja et al. (SAC)
-
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
