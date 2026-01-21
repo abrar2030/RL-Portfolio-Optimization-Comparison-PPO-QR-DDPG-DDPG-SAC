@@ -3,7 +3,6 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](requirements.txt)
 [![PyTorch](https://img.shields.io/badge/PyTorch-1.10+-red.svg)](requirements.txt)
 [![Stable-Baselines3](https://img.shields.io/badge/Stable--Baselines3-v1.6+-green.svg)](requirements.txt)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## 🎯 Project Overview
 
