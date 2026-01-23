@@ -1,11 +1,23 @@
-# RL Portfolio Optimization System
-
-## Production-Ready Deep Reinforcement Learning for Portfolio Management
+## Deep Reinforcement Learning for Portfolio Management
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](requirements.txt)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](requirements.txt)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](Dockerfile)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Production-green.svg)](production/api.py)
+
+---
+
+## 📋 Table of Contents
+
+- [Quick Start](#-quick-start)
+- [Docker Deployment](#-docker-deployment)
+- [New Features Guide](#-new-features-guide)
+- [API Documentation](#-api-documentation)
+- [Configuration](#%EF%B8%8F-configuration)
+- [Project Structure](#-project-structure)
+- [Results & Analysis](#-results--analysis)
+
+---
 
 ### ✨ Key Features
 
@@ -49,28 +61,14 @@
    - Minimum Correlation Portfolio
    - Original 5 benchmarks (MVO, Risk-Parity, etc.)
 
----
-
-## 📋 Table of Contents
-
-- [Quick Start](#-quick-start)
-- [Docker Deployment](#-docker-deployment)
-- [New Features Guide](#-new-features-guide)
-- [API Documentation](#-api-documentation)
-- [Configuration](#%EF%B8%8F-configuration)
-- [Project Structure](#-project-structure)
-- [Results & Analysis](#-results--analysis)
-
----
-
 ## 🚀 Quick Start
 
 ### Option 1: Docker (Recommended)
 
 ```bash
 # Clone repository
-git clone <your-repo-url>
-cd enhanced-rl-portfolio
+git clone https://github.com/quantsingularity/RL-Portfolio-Optimization-Comparison-PPO-QR-DDPG-DDPG-SAC
+cd RL-Portfolio-Optimization-Comparison-PPO-QR-DDPG-DDPG-SAC
 
 # Start all services
 docker-compose up -d
