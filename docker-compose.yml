@@ -1,0 +1,189 @@
+version: "3.8"
+
+services:
+  # PostgreSQL database for storing results and monitoring
+  postgres:
+    image: postgres:15-alpine
+    container_name: rl-portfolio-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-portfolio_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-portfolio_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-portfolio_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./production/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - rl-portfolio-network
+    restart: unless-stopped
+
+  # Redis for caching and task queue
+  redis:
+    image: redis:7-alpine
+    container_name: rl-portfolio-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - rl-portfolio-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # Training service with GPU support
+  training:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rl-portfolio-training
+    command: python code/train.py
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - CUDA_VISIBLE_DEVICES=0
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./results:/app/results
+      - ./config:/app/config
+    networks:
+      - rl-portfolio-network
+    depends_on:
+      - postgres
+      - redis
+    restart: on-failure
+
+  # API service for serving predictions
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rl-portfolio-api
+    command: uvicorn production.api:app --host 0.0.0.0 --port 8000 --workers 4
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-portfolio_user}:${POSTGRES_PASSWORD:-portfolio_pass}@postgres:5432/${POSTGRES_DB:-portfolio_db}
+      - REDIS_URL=redis://redis:6379/0
+      - MODEL_PATH=/app/models
+    volumes:
+      - ./models:/app/models:ro
+      - ./config:/app/config:ro
+      - ./results:/app/results
+    networks:
+      - rl-portfolio-network
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  # Celery worker for background tasks
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rl-portfolio-celery
+    command: celery -A production.tasks worker --loglevel=info --concurrency=2
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-portfolio_user}:${POSTGRES_PASSWORD:-portfolio_pass}@postgres:5432/${POSTGRES_DB:-portfolio_db}
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./models:/app/models:ro
+      - ./data:/app/data
+      - ./results:/app/results
+    networks:
+      - rl-portfolio-network
+    depends_on:
+      - postgres
+      - redis
+      - api
+    restart: unless-stopped
+
+  # Celery beat scheduler for periodic tasks
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rl-portfolio-beat
+    command: celery -A production.tasks beat --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-portfolio_user}:${POSTGRES_PASSWORD:-portfolio_pass}@postgres:5432/${POSTGRES_DB:-portfolio_db}
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./config:/app/config:ro
+    networks:
+      - rl-portfolio-network
+    depends_on:
+      - postgres
+      - redis
+      - celery_worker
+    restart: unless-stopped
+
+  # Grafana for monitoring and visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: rl-portfolio-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_DATABASE_TYPE=postgres
+      - GF_DATABASE_HOST=postgres:5432
+      - GF_DATABASE_NAME=${POSTGRES_DB:-portfolio_db}
+      - GF_DATABASE_USER=${POSTGRES_USER:-portfolio_user}
+      - GF_DATABASE_PASSWORD=${POSTGRES_PASSWORD:-portfolio_pass}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./production/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    networks:
+      - rl-portfolio-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # Jupyter notebook for experimentation
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rl-portfolio-jupyter
+    command: jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''
+    ports:
+      - "8888:8888"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - ./notebooks:/app/notebooks
+      - ./code:/app/code
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./results:/app/results
+    networks:
+      - rl-portfolio-network
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+networks:
+  rl-portfolio-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  grafana_data:
