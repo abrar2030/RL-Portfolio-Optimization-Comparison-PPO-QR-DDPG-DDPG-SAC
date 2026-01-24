@@ -26,7 +26,7 @@
 
 ## 💡 Project Overview
 
-This repository presents a comprehensive comparative study of four state-of-the-art Deep Reinforcement Learning (DRL) algorithms—**Proximal Policy Optimization (PPO)**, **Quantile Regression Deep Deterministic Policy Gradient (QR-DDPG)**, **Deep Deterministic Policy Gradient (DDPG)**, and **Soft Actor-Critic (SAC)**—applied to the problem of continuous portfolio optimization.
+This repository presents a comprehensive comparative study of four state-of-the-art Deep Reinforcement Learning (DRL) algorithms **Proximal Policy Optimization (PPO)**, **Quantile Regression Deep Deterministic Policy Gradient (QR-DDPG)**, **Deep Deterministic Policy Gradient (DDPG)**, and **Soft Actor-Critic (SAC)** applied to the problem of continuous portfolio optimization.
 
 The project goes beyond a simple comparison by integrating advanced financial engineering concepts, including **transaction cost analysis**, **market regime classification**, and **strict market constraints**, to create a robust, production-ready framework for algorithmic portfolio management.
 
